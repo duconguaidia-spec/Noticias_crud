@@ -66,3 +66,18 @@ func CreateNoticia(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, 201, n)
 }
 
+func UpdateNoticia(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	var n models.Noticia
+	json.NewDecoder(r.Body).Decode(&n)
+	_, err := config.DB.Exec(
+		"UPDATE noticias SET titulo=$1, tipo=$2, cuerpo=$3, url_video=$4, imagen_destacada=$5, fuente=$6, fecha_noticia=$7, id_usuario=$8, acceso_limitado=$9, estado=$10, activo=$11 WHERE id=$12",
+		n.Titulo, n.Tipo, n.Cuerpo, n.UrlVideo, n.ImagenDestacada, n.Fuente, n.FechaNoticia, n.IDUsuario, n.AccesoLimitado, n.Estado, n.Activo, id,
+	)
+	if err != nil {
+		respondJSON(w, 500, map[string]string{"error": err.Error()})
+		return
+	}
+	respondJSON(w, 200, map[string]string{"message": "Noticia actualizada"})
+}
+
