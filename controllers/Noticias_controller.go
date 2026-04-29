@@ -81,3 +81,12 @@ func UpdateNoticia(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, 200, map[string]string{"message": "Noticia actualizada"})
 }
 
+func DeleteNoticia(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	_, err := config.DB.Exec("DELETE FROM noticias WHERE id=$1", id)
+	if err != nil {
+		respondJSON(w, 500, map[string]string{"error": err.Error()})
+		return
+	}
+	respondJSON(w, 200, map[string]string{"message": "Noticia eliminada"})
+}
