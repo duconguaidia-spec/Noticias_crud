@@ -39,3 +39,16 @@ func GetAllNoticias(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, 200, list)
 }
 
+func GetNoticiaByID(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	var n models.Noticia
+	err := config.DB.QueryRow(
+		"SELECT id, titulo, tipo, cuerpo, url_video, imagen_destacada, fuente, fecha_noticia, id_usuario, acceso_limitado, estado, activo, fecha_creacion, fecha_modificacion FROM noticias WHERE id=$1", id,
+	).Scan(&n.ID, &n.Titulo, &n.Tipo, &n.Cuerpo, &n.UrlVideo, &n.ImagenDestacada, &n.Fuente, &n.FechaNoticia, &n.IDUsuario, &n.AccesoLimitado, &n.Estado, &n.Activo, &n.FechaCreacion, &n.FechaModificacion)
+	if err != nil {
+		respondJSON(w, 404, map[string]string{"error": "Noticia no encontrada"})
+		return
+	}
+	respondJSON(w, 200, n)
+}
+
