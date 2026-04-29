@@ -52,3 +52,17 @@ func GetNoticiaByID(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, 200, n)
 }
 
+func CreateNoticia(w http.ResponseWriter, r *http.Request) {
+	var n models.Noticia
+	json.NewDecoder(r.Body).Decode(&n)
+	err := config.DB.QueryRow(
+		"INSERT INTO noticias (titulo, tipo, cuerpo, url_video, imagen_destacada, fuente, fecha_noticia, id_usuario, acceso_limitado, estado, activo) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id",
+		n.Titulo, n.Tipo, n.Cuerpo, n.UrlVideo, n.ImagenDestacada, n.Fuente, n.FechaNoticia, n.IDUsuario, n.AccesoLimitado, n.Estado, n.Activo,
+	).Scan(&n.ID)
+	if err != nil {
+		respondJSON(w, 500, map[string]string{"error": err.Error()})
+		return
+	}
+	respondJSON(w, 201, n)
+}
+
