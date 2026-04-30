@@ -15,7 +15,7 @@ func respondJSON(w http.ResponseWriter, status int, payload interface{}) {
 }
 
 func GetAllNoticias(w http.ResponseWriter, r *http.Request) {
-	rows, err := config.DB.Query(
+	rows, err := config.AgroCampo.Query(
 		"SELECT id, titulo, tipo, cuerpo, url_video, imagen_destacada, fuente, fecha_noticia, id_usuario, acceso_limitado, estado, activo, fecha_creacion, fecha_modificacion FROM noticias",
 	)
 	if err != nil {
@@ -42,7 +42,7 @@ func GetAllNoticias(w http.ResponseWriter, r *http.Request) {
 func GetNoticiaByID(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	var n models.Noticia
-	err := config.DB.QueryRow(
+	err := config.AgroCampo.QueryRow(
 		"SELECT id, titulo, tipo, cuerpo, url_video, imagen_destacada, fuente, fecha_noticia, id_usuario, acceso_limitado, estado, activo, fecha_creacion, fecha_modificacion FROM noticias WHERE id=$1", id,
 	).Scan(&n.ID, &n.Titulo, &n.Tipo, &n.Cuerpo, &n.UrlVideo, &n.ImagenDestacada, &n.Fuente, &n.FechaNoticia, &n.IDUsuario, &n.AccesoLimitado, &n.Estado, &n.Activo, &n.FechaCreacion, &n.FechaModificacion)
 	if err != nil {
@@ -55,7 +55,7 @@ func GetNoticiaByID(w http.ResponseWriter, r *http.Request) {
 func CreateNoticia(w http.ResponseWriter, r *http.Request) {
 	var n models.Noticia
 	json.NewDecoder(r.Body).Decode(&n)
-	err := config.DB.QueryRow(
+	err := config.AgroCampo.QueryRow(
 		"INSERT INTO noticias (titulo, tipo, cuerpo, url_video, imagen_destacada, fuente, fecha_noticia, id_usuario, acceso_limitado, estado, activo) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id",
 		n.Titulo, n.Tipo, n.Cuerpo, n.UrlVideo, n.ImagenDestacada, n.Fuente, n.FechaNoticia, n.IDUsuario, n.AccesoLimitado, n.Estado, n.Activo,
 	).Scan(&n.ID)
@@ -70,7 +70,7 @@ func UpdateNoticia(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	var n models.Noticia
 	json.NewDecoder(r.Body).Decode(&n)
-	_, err := config.DB.Exec(
+	_, err := config.AgroCampo.Exec(
 		"UPDATE noticias SET titulo=$1, tipo=$2, cuerpo=$3, url_video=$4, imagen_destacada=$5, fuente=$6, fecha_noticia=$7, id_usuario=$8, acceso_limitado=$9, estado=$10, activo=$11 WHERE id=$12",
 		n.Titulo, n.Tipo, n.Cuerpo, n.UrlVideo, n.ImagenDestacada, n.Fuente, n.FechaNoticia, n.IDUsuario, n.AccesoLimitado, n.Estado, n.Activo, id,
 	)
@@ -83,7 +83,7 @@ func UpdateNoticia(w http.ResponseWriter, r *http.Request) {
 
 func DeleteNoticia(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	_, err := config.DB.Exec("DELETE FROM noticias WHERE id=$1", id)
+	_, err := config.AgroCampo.Exec("DELETE FROM noticias WHERE id=$1", id)
 	if err != nil {
 		respondJSON(w, 500, map[string]string{"error": err.Error()})
 		return
