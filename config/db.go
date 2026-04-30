@@ -17,8 +17,8 @@ func ConnectDB() {
 	dbname := "AgroCampo"
 	schema := "Noticias"
 	psqlInfo := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s search_path=%s sslmode=disable",
-		host, port, user, password, dbname, schema,
+    `host=%s port=%d user=%s password=%s dbname=%s search_path="%s" sslmode=disable`,
+    host, port, user, password, dbname, schema,
 	)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
