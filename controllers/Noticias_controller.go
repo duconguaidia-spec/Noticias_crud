@@ -15,8 +15,8 @@ func respondJSON(w http.ResponseWriter, status int, payload interface{}) {
 }
 
 func GetAllNoticias(w http.ResponseWriter, r *http.Request) {
-	rows, err := config.AgroCampo.Query(
-		"SELECT id_noticia, titulo, tipo, cuerpo, url_video, imagen_destacada, fuente, fecha_noticia, id_usuario, acceso_limitado, estado, activo, fecha_creacion, fecha_modificacion FROM \"Noticia\"",
+	rows, err := config.DB.Query(
+		`SELECT id_noticia, titulo, tipo, cuerpo, url_video, imagen_destacada, fuente, fecha_noticia, id_usuario, acceso_limitado, estado, activo, fecha_creacion, fecha_modificacion FROM "Noticia"`,
 	)
 	if err != nil {
 		respondJSON(w, 500, map[string]string{"error": err.Error()})
@@ -42,8 +42,8 @@ func GetAllNoticias(w http.ResponseWriter, r *http.Request) {
 func GetNoticiaByID(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	var n models.Noticia
-	err := config.AgroCampo.QueryRow(
-		"SELECT id_noticia, titulo, tipo, cuerpo, url_video, imagen_destacada, fuente, fecha_noticia, id_usuario, acceso_limitado, estado, activo, fecha_creacion, fecha_modificacion FROM \"Noticia\" WHERE id_noticia=$1", id,
+	err := config.DB.QueryRow(
+		`SELECT id_noticia, titulo, tipo, cuerpo, url_video, imagen_destacada, fuente, fecha_noticia, id_usuario, acceso_limitado, estado, activo, fecha_creacion, fecha_modificacion FROM "Noticia" WHERE id_noticia=$1`, id,
 	).Scan(&n.ID, &n.Titulo, &n.Tipo, &n.Cuerpo, &n.UrlVideo, &n.ImagenDestacada, &n.Fuente, &n.FechaNoticia, &n.IDUsuario, &n.AccesoLimitado, &n.Estado, &n.Activo, &n.FechaCreacion, &n.FechaModificacion)
 	if err != nil {
 		respondJSON(w, 404, map[string]string{"error": "Noticia no encontrada"})
@@ -55,8 +55,8 @@ func GetNoticiaByID(w http.ResponseWriter, r *http.Request) {
 func CreateNoticia(w http.ResponseWriter, r *http.Request) {
 	var n models.Noticia
 	json.NewDecoder(r.Body).Decode(&n)
-	err := config.AgroCampo.QueryRow(
-		"INSERT INTO \"Noticia\" (titulo, tipo, cuerpo, url_video, imagen_destacada, fuente, fecha_noticia, id_usuario, acceso_limitado, estado, activo) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id_noticia",
+	err := config.DB.QueryRow(
+		`INSERT INTO "Noticia" (titulo, tipo, cuerpo, url_video, imagen_destacada, fuente, fecha_noticia, id_usuario, acceso_limitado, estado, activo) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id_noticia`,
 		n.Titulo, n.Tipo, n.Cuerpo, n.UrlVideo, n.ImagenDestacada, n.Fuente, n.FechaNoticia, n.IDUsuario, n.AccesoLimitado, n.Estado, n.Activo,
 	).Scan(&n.ID)
 	if err != nil {
@@ -70,8 +70,8 @@ func UpdateNoticia(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	var n models.Noticia
 	json.NewDecoder(r.Body).Decode(&n)
-	_, err := config.AgroCampo.Exec(
-		"UPDATE \"Noticia\" SET titulo=$1, tipo=$2, cuerpo=$3, url_video=$4, imagen_destacada=$5, fuente=$6, fecha_noticia=$7, id_usuario=$8, acceso_limitado=$9, estado=$10, activo=$11 WHERE id_noticia=$12",
+	_, err := config.DB.Exec(
+		`UPDATE "Noticia" SET titulo=$1, tipo=$2, cuerpo=$3, url_video=$4, imagen_destacada=$5, fuente=$6, fecha_noticia=$7, id_usuario=$8, acceso_limitado=$9, estado=$10, activo=$11 WHERE id_noticia=$12`,
 		n.Titulo, n.Tipo, n.Cuerpo, n.UrlVideo, n.ImagenDestacada, n.Fuente, n.FechaNoticia, n.IDUsuario, n.AccesoLimitado, n.Estado, n.Activo, id,
 	)
 	if err != nil {
@@ -83,7 +83,7 @@ func UpdateNoticia(w http.ResponseWriter, r *http.Request) {
 
 func DeleteNoticia(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	_, err := config.AgroCampo.Exec("DELETE FROM \"Noticia\" WHERE id_noticia=$1", id)
+	_, err := config.DB.Exec(`DELETE FROM "Noticia" WHERE id_noticia=$1`, id)
 	if err != nil {
 		respondJSON(w, 500, map[string]string{"error": err.Error()})
 		return
