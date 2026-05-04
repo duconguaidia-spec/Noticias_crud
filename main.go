@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
-	"API_GO_CRUD/config"
-	"API_GO_CRUD/routes"
+	"NOTICIAS_CRUD/config"
+	"NOTICIAS_CRUD/routes"
 	"github.com/gorilla/mux"
 )
 

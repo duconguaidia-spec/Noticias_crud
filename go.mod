@@ -1,4 +1,4 @@
-module API_GO_CRUD
+module NOTICIAS_CRUD
 
 go 1.21.13
 

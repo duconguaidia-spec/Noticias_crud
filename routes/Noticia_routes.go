@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"API_GO_CRUD/controllers"
+	"NOTICIAS_CRUD/controllers"
 	"github.com/gorilla/mux"
 )
 
