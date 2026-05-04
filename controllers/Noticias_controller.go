@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"API_GO_CRUD/config"
-	"API_GO_CRUD/models"
+	"NOTICIAS_CRUD/config"
+	"NOTICIAS_CRUD/models"
 	"encoding/json"
 	"net/http"
 	"github.com/gorilla/mux"
